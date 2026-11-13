@@ -1,118 +1,101 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Darija Voice Test</title>
+  <title>اختبار الصوت بالدارجة</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b4532a'/%3E%3Cpath d='M9 12v8M14 8v16M19 11v10M24 14v4' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 </head>
 <body>
+  <nav class="lang" id="lang" aria-label="Language / اللغة / Langue"></nav>
+
   <main class="card">
-    <div id="test-banner" class="banner" hidden>Test mode: ratings are not saved.</div>
+    <div id="test-banner" class="banner" data-i18n="testMode" hidden></div>
 
     <!-- 1. Welcome + listener questions -->
     <section id="screen-welcome">
-      <p class="eyebrow">Listening test · about 8 minutes</p>
-      <h1>How natural does this voice sound?</h1>
-      <p class="lead">You will hear <strong id="clip-count">32</strong> short Darija sentences, one at a time.
-        Some are real people, some are computer voices. Listen to each one to the end, then rate it.</p>
+      <p class="eyebrow" data-i18n="eyebrow"></p>
+      <h1 data-i18n="heading"></h1>
+      <p class="lead" id="lead"></p>
       <ul class="tips">
-        <li>Use headphones in a quiet place.</li>
-        <li>Judge the <em>voice</em>, not whether you like the sentence.</li>
-        <li>There are no right answers. Go with your first impression.</li>
+        <li data-i18n="tip1"></li>
+        <li data-i18n="tip2"></li>
+        <li data-i18n="tip3"></li>
       </ul>
 
       <form id="profile" novalidate>
         <fieldset>
-          <legend>Do you speak Darija as a native language?</legend>
+          <legend data-i18n="native"></legend>
           <div class="choices">
-            <label><input type="radio" name="native" value="yes" required> Yes</label>
-            <label><input type="radio" name="native" value="no"> No</label>
+            <label><input type="radio" name="native" value="yes" required> <span data-i18n="yes"></span></label>
+            <label><input type="radio" name="native" value="no"> <span data-i18n="no"></span></label>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Are you using headphones?</legend>
+          <legend data-i18n="headphones"></legend>
           <div class="choices">
-            <label><input type="radio" name="headphones" value="yes" required> Yes</label>
-            <label><input type="radio" name="headphones" value="no"> No, speakers</label>
+            <label><input type="radio" name="headphones" value="yes" required> <span data-i18n="yes"></span></label>
+            <label><input type="radio" name="headphones" value="no"> <span data-i18n="speakers"></span></label>
           </div>
         </fieldset>
         <div class="row">
-          <label class="field">Region you grew up in
-            <select name="region" required>
-              <option value="">Choose…</option>
-              <option>Tanger-Tétouan-Al Hoceïma</option>
-              <option>Oriental</option>
-              <option>Fès-Meknès</option>
-              <option>Rabat-Salé-Kénitra</option>
-              <option>Béni Mellal-Khénifra</option>
-              <option>Casablanca-Settat</option>
-              <option>Marrakech-Safi</option>
-              <option>Drâa-Tafilalet</option>
-              <option>Souss-Massa</option>
-              <option>Guelmim-Oued Noun</option>
-              <option>Laâyoune-Sakia El Hamra</option>
-              <option>Dakhla-Oued Ed-Dahab</option>
-              <option>Outside Morocco</option>
-            </select>
+          <label class="field"><span data-i18n="region"></span>
+            <select name="region" required></select>
           </label>
-          <label class="field">Age
-            <select name="age_range" required>
-              <option value="">Choose…</option>
-              <option>under 18</option><option>18-24</option><option>25-34</option>
-              <option>35-44</option><option>45-54</option><option>55+</option>
-            </select>
+          <label class="field"><span data-i18n="age"></span>
+            <select name="age_range" required></select>
           </label>
         </div>
         <label class="consent"><input type="checkbox" name="consent" required>
-          I agree that my anonymous answers are stored for research. No name or email is collected.</label>
-        <p id="profile-error" class="error" hidden>Please answer every question above.</p>
-        <button type="submit" class="primary">Start the test</button>
+          <span data-i18n="consent"></span></label>
+        <p id="profile-error" class="error" data-i18n="error" hidden></p>
+        <button type="submit" class="primary" data-i18n="start"></button>
       </form>
     </section>
 
     <!-- 2. Rating -->
     <section id="screen-rate" hidden>
       <div class="progress-head">
-        <span id="progress-label">Clip 1 of 32</span>
+        <span id="progress-label"></span>
         <span id="save-state" class="save-state" aria-live="polite"></span>
       </div>
       <div class="progress"><div id="progress-bar"></div></div>
 
       <div class="player">
-        <button id="play" class="play" aria-label="Play clip">
+        <button id="play" class="play">
           <svg id="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
           <svg id="icon-pause" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
         </button>
         <div class="track"><div id="track-bar"></div></div>
-        <p id="play-hint" class="hint">Press play and listen to the end.</p>
+        <p id="play-hint" class="hint"></p>
       </div>
 
       <fieldset id="q-natural" class="scale" disabled>
-        <legend>How natural does the voice sound?</legend>
-        <div class="options" data-name="naturalness"></div>
+        <legend data-i18n="qNatural"></legend>
+        <div class="options" data-name="naturalness" data-words="natural"></div>
       </fieldset>
       <fieldset id="q-clear" class="scale" disabled>
-        <legend>How easy is it to understand?</legend>
-        <div class="options" data-name="intelligibility"></div>
+        <legend data-i18n="qClear"></legend>
+        <div class="options" data-name="intelligibility" data-words="clear"></div>
       </fieldset>
 
-      <button id="next" class="primary" disabled>Next clip</button>
+      <button id="next" class="primary" data-i18n="next" disabled></button>
     </section>
 
     <!-- 3. Done -->
     <section id="screen-done" hidden>
-      <p class="eyebrow">Finished</p>
-      <h1>Thank you!</h1>
-      <p class="lead">Your ratings help us build a Darija voice that sounds like a real person.</p>
+      <p class="eyebrow" data-i18n="doneEyebrow"></p>
+      <h1 data-i18n="thanks"></h1>
+      <p class="lead" data-i18n="doneLead"></p>
       <p id="done-state" class="hint"></p>
-      <button id="retry" class="primary" hidden>Send the remaining ratings</button>
+      <button id="retry" class="primary" data-i18n="retry" hidden></button>
     </section>
   </main>
 
   <script src="config.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

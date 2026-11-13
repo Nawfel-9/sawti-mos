@@ -3,8 +3,7 @@
 
 const CONFIG = window.SAWTI_MOS || { endpoint: "", version: "v1" };
 const STORE = `sawti-mos-${CONFIG.version}`;
-const NATURAL = ["Bad", "Poor", "Fair", "Good", "Excellent"];
-const CLEAR = ["Very hard", "Hard", "OK", "Easy", "Very easy"];
+const LANG_STORE = "sawti-mos-lang";
 
 const $ = (id) => document.getElementById(id);
 const audio = new Audio();
@@ -12,13 +11,65 @@ audio.preload = "auto";
 let clips = [];
 let state = null;
 let current = { plays: 0, firstPlay: null, heardToEnd: false };
+let lang = "ary";
 
 // ---------- storage (survives a reload, so a listener can resume) ----------
-function load() {
-  try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; }
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
 }
-function save() {
-  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch { /* private mode: still works, no resume */ }
+function store(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode: works, just no resume */ }
+}
+const save = () => store(STORE, state);
+
+// ---------- language ----------
+function t(key, vars = {}) {
+  const text = STRINGS[lang][key] ?? STRINGS.en[key];
+  return typeof text === "string" ? text.replace(/\{(\w+)\}/g, (_, v) => vars[v]) : text;
+}
+
+function fillSelect(select, items) {
+  const value = select.value;
+  select.innerHTML = `<option value="">${t("choose")}</option>` + items
+    .map(([saved, ar, fr]) => {
+      const label = lang === "ary" ? ar || saved : lang === "fr" ? fr || saved : saved;
+      return `<option value="${saved}">${label}</option>`;
+    })
+    .join("");
+  select.value = value;
+}
+
+function buildScale(container) {
+  const name = container.dataset.name;
+  const checked = choice(name);
+  container.innerHTML = t(container.dataset.words)
+    .map((w, i) => `<label><input type="radio" name="${name}" value="${i + 1}"${checked === i + 1 ? " checked" : ""}><span class="num">${i + 1}</span><span class="word">${w}</span></label>`)
+    .join("");
+}
+
+function setLanguage(code) {
+  lang = STRINGS[code] ? code : "ary";
+  store(LANG_STORE, lang);
+  document.documentElement.lang = LANGS[lang].html;
+  document.documentElement.dir = LANGS[lang].dir;
+  document.title = t("title");
+  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
+  $("lead").innerHTML = t("lead", { n: `<strong>${clips.length || 32}</strong>` });
+  fillSelect(document.querySelector('select[name="region"]'), REGIONS);
+  fillSelect(document.querySelector('select[name="age_range"]'), AGES);
+  for (const scale of document.querySelectorAll(".options")) buildScale(scale);
+  for (const b of $("lang").children) b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  if (state) refreshRateTexts();
+}
+
+function buildSwitcher() {
+  $("lang").innerHTML = Object.entries(LANGS)
+    .map(([code, l]) => `<button type="button" data-lang="${code}" lang="${l.html}">${l.name}</button>`)
+    .join("");
+  $("lang").addEventListener("click", (e) => {
+    const code = e.target.closest("button")?.dataset.lang;
+    if (code) setLanguage(code);
+  });
 }
 
 // ---------- order: random per listener, never the same sentence twice in a row ----------
@@ -73,14 +124,10 @@ function showSaveState() {
   const pending = state.queue.length;
   const failed = pending && sendFailed;
   // a queued answer is normal while it is being sent; only a failed send is worth a warning
-  el.textContent = failed ? `${pending} answer${pending > 1 ? "s" : ""} not sent yet` : pending ? "Saving…" : "Saved";
+  el.textContent = failed ? t("notSent", { n: pending }) : pending ? t("saving") : t("saved");
   el.className = `save-state ${failed ? "bad" : "ok"}`;
-  if (!$("screen-done").hidden) {
-    $("done-state").textContent = failed
-      ? `${pending} answer${pending > 1 ? "s were" : " was"} not sent yet. Check your connection and press the button.`
-      : pending ? "Saving your answers…" : "All your ratings are saved. You can close this page.";
-    $("retry").hidden = !failed;
-  }
+  $("done-state").textContent = failed ? t("failed", { n: pending }) : pending ? t("stillSaving") : t("allSaved");
+  $("retry").hidden = !failed;
 }
 function row(event, extra = {}) {
   return {
@@ -99,34 +146,31 @@ function show(name) {
   window.scrollTo({ top: 0 });
 }
 
-function buildScale(container, words) {
-  const name = container.dataset.name;
-  container.innerHTML = words
-    .map((w, i) => `<label><input type="radio" name="${name}" value="${i + 1}"><span class="num">${i + 1}</span><span class="word">${w}</span></label>`)
-    .join("");
+function refreshRateTexts() {
+  $("progress-label").textContent = t("progress", { i: Math.min(state.index + 1, state.order.length), n: state.order.length });
+  $("play-hint").textContent = current.heardToEnd ? t("hintRate") : t("hintPlay");
+  $("play").setAttribute("aria-label", audio.paused ? t("play") : t("pause"));
+  showSaveState();
 }
 
 function showClip() {
   const n = state.order.length;
-  const id = state.order[state.index];
-  $("progress-label").textContent = `Clip ${state.index + 1} of ${n}`;
   $("progress-bar").style.width = `${(state.index / n) * 100}%`;
   current = { plays: 0, firstPlay: null, heardToEnd: false };
-  audio.src = `clips/${id}.wav`;
+  audio.src = `clips/${state.order[state.index]}.wav`;
   $("track-bar").style.width = "0";
-  $("play-hint").textContent = "Press play and listen to the end.";
   for (const input of document.querySelectorAll(".scale input")) input.checked = false;
   $("q-natural").disabled = true;
   $("q-clear").disabled = true;
   $("next").disabled = true;
   setPlaying(false);
-  showSaveState();
+  refreshRateTexts();
 }
 
 function setPlaying(on) {
   $("icon-play").hidden = on;
   $("icon-pause").hidden = !on;
-  $("play").setAttribute("aria-label", on ? "Pause clip" : "Play clip");
+  $("play").setAttribute("aria-label", on ? t("pause") : t("play"));
 }
 
 function choice(name) {
@@ -205,7 +249,7 @@ audio.addEventListener("ended", () => {
   current.heardToEnd = true;
   $("q-natural").disabled = false;
   $("q-clear").disabled = false;
-  $("play-hint").textContent = "Now rate it below. You can play it again.";
+  $("play-hint").textContent = t("hintRate");
 });
 document.addEventListener("change", (e) => {
   if (e.target.closest(".scale")) $("next").disabled = !(choice("naturalness") && choice("intelligibility"));
@@ -222,12 +266,12 @@ document.addEventListener("keydown", (e) => {
 // ---------- start ----------
 (async function init() {
   $("test-banner").hidden = Boolean(CONFIG.endpoint);
-  buildScale(document.querySelector('[data-name="naturalness"]'), NATURAL);
-  buildScale(document.querySelector('[data-name="intelligibility"]'), CLEAR);
+  buildSwitcher();
+  setLanguage(load(LANG_STORE) || "ary");
   clips = await (await fetch("clips.json")).json();
-  $("clip-count").textContent = clips.length;
-  state = load();
-  if (state && state.finished) { show("done"); showSaveState(); flush(); return; }
+  state = load(STORE);
+  setLanguage(lang); // again, now that the clip count and any saved session are known
+  if (state && state.finished) { show("done"); flush(); return; }
   if (state) { show("rate"); showClip(); flush(); return; }
   show("welcome");
 })();

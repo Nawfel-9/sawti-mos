@@ -6,6 +6,10 @@ order (never the same sentence twice in a row), listen to each to the end, and r
 - **naturalness** 1–5 (Bad, Poor, Fair, Good, Excellent): this is the MOS;
 - **ease of understanding** 1–5.
 
+The page opens in Darija (Arabic script, right to left); the switch at the top left changes it to English or
+French in one click, and the choice is remembered. Only the labels change: the values saved (yes/no, region, age)
+are the same in every language. Texts are in `i18n.js`.
+
 Each rating is sent at once to a Google Sheet through a Google Apps Script web app. If the connection drops,
 ratings wait in the browser and are sent later. A listener who reloads the page resumes where they stopped.
 
@@ -17,6 +21,7 @@ The page never names the systems. Which system made which clip (`key.csv`) stays
 | file | what |
 |---|---|
 | `index.html`, `style.css`, `app.js` | the page (no build step, no external libraries) |
+| `i18n.js` | interface texts in Darija, English and French |
 | `config.js` | the Apps Script URL; empty = test mode, nothing is saved |
 | `clips/clip_001.wav` … `clip_032.wav` | the clips, 16 kHz mono, loudness-matched |
 | `clips.json` | clip ids + anonymous sentence groups (used only to space out repeats of a sentence) |

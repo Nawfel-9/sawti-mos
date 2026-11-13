@@ -37,9 +37,38 @@ body {
   color: var(--ink);
   display: grid;
   place-items: start center;
-  padding: 40px 16px;
+  padding: 72px 16px 40px;
   line-height: 1.5;
 }
+:lang(ar) { line-height: 1.7; }
+:lang(ar) h1 { font-family: inherit; font-weight: 700; }
+
+/* language switch: always top-left, one click */
+.lang {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgb(60 30 10 / 0.08);
+  direction: ltr;
+}
+.lang button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.lang button:not([aria-pressed="true"]):hover { color: var(--ink); }
 .card {
   width: 100%;
   max-width: 620px;
@@ -75,7 +104,7 @@ h1 {
   line-height: 1.15;
 }
 .lead { margin: 0 0 16px; font-size: 1.05rem; }
-.tips { margin: 0 0 28px; padding-left: 20px; color: var(--muted); }
+.tips { margin: 0 0 28px; padding-inline-start: 20px; color: var(--muted); }
 .tips li { margin: 4px 0; }
 
 form { display: grid; gap: 18px; border-top: 1px solid var(--line); padding-top: 24px; }
