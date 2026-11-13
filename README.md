@@ -43,6 +43,9 @@ The page never names the systems. Which system made which clip (`key.csv`) stays
 
 If you change `Code.gs` later: **Deploy → Manage deployments → Edit → Version: New version**. Keep the same URL.
 
+If you change `style.css`, `config.js`, `i18n.js` or `app.js`, raise the `?v=` number on its link in `index.html`.
+GitHub Pages lets browsers cache files for 10 minutes, and a new page with an old script breaks.
+
 ## The data
 
 Tab `ratings`, one row per event:
@@ -71,5 +74,3 @@ python -m sawti_tts.evaluation.mos_analyze --sheet <ratings>.csv --drop-bad
 The real recordings among the clips come from the **DODa audio dataset**
 ([atlasia/DODa-audio-dataset](https://huggingface.co/datasets/atlasia/DODa-audio-dataset)), released under the
 MIT License. The other clips are synthesized by the Sawti-TTS models.
-
-When you change `style.css`, `config.js`, `i18n.js` or `app.js`, raise the `?v=` number on its link in `index.html`: GitHub Pages lets browsers cache files for 10 minutes, and a new page with an old script breaks.
