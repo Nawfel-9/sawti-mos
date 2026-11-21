@@ -1,6 +1,6 @@
 # Darija Voice Test (Sawti-TTS MOS)
 
-A one-page blind listening test for the Sawti-TTS evaluation. Listeners hear 32 short Darija clips in a random
+A one-page blind listening test for the Sawti-TTS evaluation. Listeners hear 48 short Darija clips in a random
 order (never the same sentence twice in a row), listen to each to the end, and rate:
 
 - **naturalness** 1–5 (Bad, Poor, Fair, Good, Excellent): this is the MOS;
@@ -23,7 +23,7 @@ The page never names the systems. Which system made which clip (`key.csv`) stays
 | `index.html`, `style.css`, `app.js` | the page (no build step, no external libraries) |
 | `i18n.js` | interface texts in Darija, English and French |
 | `config.js` | the Apps Script URL; empty = test mode, nothing is saved |
-| `clips/clip_001.wav` … `clip_032.wav` | the clips, 16 kHz mono, loudness-matched |
+| `clips/clip_001.wav` … `clip_048.wav` | the clips, 16 kHz mono, loudness-matched |
 | `clips.json` | clip ids + anonymous sentence groups (used only to space out repeats of a sentence) |
 | `apps-script/Code.gs` | the script that writes ratings into the Sheet |
 
@@ -61,13 +61,15 @@ Tab `ratings`, one row per event:
 | `plays` | times the clip was played from the start |
 | `seconds` | from the first play to pressing Next |
 | `native`, `headphones`, `region`, `age_range` | the listener's answers on the first screen |
-| `client_time`, `version` | browser time; test version (`v1`) |
+| `client_time`, `version` | browser time; test version (`v2`: Habibi fine-tuned and zero-shot, FastPitch + tuned HiFi-GAN, VITS, eSpeak NG and real recordings, 8 sentences each; `v1` was the first, pre-Habibi set) |
 
 When the test is over: **File → Download → Comma-separated values (.csv)** on the `ratings` tab. Then, in the Sawti repository:
 
 ```
 python -m sawti_tts.evaluation.mos_analyze --sheet <ratings>.csv --drop-bad
 ```
+
+It reads only the rows of the current test version (`v2`), so ratings from an earlier set never mix in.
 
 ## Credits
 

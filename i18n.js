@@ -32,7 +32,7 @@ window.STRINGS = {
   ary: {
     title: "اختبار الصوت بالدارجة",
     testMode: "وضع التجربة: التقييمات ماكايتسجلوش.",
-    eyebrow: "اختبار الاستماع · تقريبا 8 دقايق",
+    eyebrow: "اختبار الاستماع · تقريبا 12 دقيقة",
     heading: "واش هاد الصوت كيبان طبيعي؟",
     lead: "غادي تسمع {n} جملة قصيرة بالدارجة، وحدة بوحدة. شي وحدين أصوات ديال ناس حقيقيين، وشي وحدين أصوات ديال الكمبيوتر. سمع كل وحدة حتى للخر، من بعد عطيها نقطة.",
     tip1: "سمع بالكاسك ف بلاصة هادية.",
@@ -73,7 +73,7 @@ window.STRINGS = {
   en: {
     title: "Darija Voice Test",
     testMode: "Test mode: ratings are not saved.",
-    eyebrow: "Listening test · about 8 minutes",
+    eyebrow: "Listening test · about 12 minutes",
     heading: "How natural does this voice sound?",
     lead: "You will hear {n} short Darija sentences, one at a time. Some are real people, some are computer voices. Listen to each one to the end, then rate it.",
     tip1: "Use headphones in a quiet place.",
@@ -114,7 +114,7 @@ window.STRINGS = {
   fr: {
     title: "Test de voix en darija",
     testMode: "Mode test : les notes ne sont pas enregistrées.",
-    eyebrow: "Test d'écoute · environ 8 minutes",
+    eyebrow: "Test d'écoute · environ 12 minutes",
     heading: "Cette voix sonne-t-elle naturelle ?",
     lead: "Vous allez entendre {n} courtes phrases en darija, une par une. Certaines sont dites par de vraies personnes, d'autres par une voix d'ordinateur. Écoutez chacune jusqu'au bout, puis notez-la.",
     tip1: "Utilisez un casque, dans un endroit calme.",

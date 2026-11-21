@@ -54,7 +54,7 @@ function setLanguage(code) {
   document.documentElement.dir = LANGS[lang].dir;
   document.title = t("title");
   for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
-  $("lead").innerHTML = t("lead", { n: `<strong>${clips.length || 32}</strong>` });
+  $("lead").innerHTML = t("lead", { n: `<strong>${clips.length || 48}</strong>` });
   fillSelect(document.querySelector('select[name="region"]'), REGIONS);
   fillSelect(document.querySelector('select[name="age_range"]'), AGES);
   for (const scale of document.querySelectorAll(".options")) buildScale(scale);
